@@ -1,30 +1,38 @@
 package com.algaworks.osworks.api.controller;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.osworks.domain.model.Cliente;
+import com.algaworks.osworks.domain.repository.ClienteRepository;
 
 @RestController
+@RequestMapping("/clientes")
 public class ClienteController {
 	
-	@GetMapping("/clientes")
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
+	@GetMapping
 	public List<Cliente> listar() {
-		var cliente1 = new Cliente();
-		cliente1.setId(1L);
-		cliente1.setNome("Joao teste");
-		cliente1.setTelefone("123456");
-		cliente1.setEmail("teste@");
-		var cliente2 = new Cliente();
-		cliente2.setId(1L);
-		cliente2.setNome("Maria");
-		cliente2.setTelefone("123456");
-		cliente2.setEmail("maira@");
+		return clienteRepository.findAll();
+	}
+	
+	@GetMapping("/{clienteId}")
+	public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
+		Optional<Cliente> cliente = clienteRepository.findById(clienteId);
 		
-		return Arrays.asList(cliente1, cliente2);
+		if(cliente.isPresent()) {
+			return ResponseEntity.ok(cliente.get());
+		}
+		return ResponseEntity.notFound().build();
 	}
 
 }
